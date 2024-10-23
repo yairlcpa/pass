@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="theme-color" content="#333">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touce-icon" href="./pics/logo192.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">    
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="crypto.js"></script>
+  <script defer src="main.js"></script>
+  <title>MyPass</title>
+</head>
+
+<body data-bs-theme="dark">
+<div class="flex-center"><div class="app">
+
+<!--- MASTER ELEMENTS -->
+<section class="page">
+  <div id="msgbox" class="page mask flex-center">
+    <div class="msgbox flex-column rounded-5 bg-body-tertiary" onclick="event.stopPropagation()">
+      <div id="msgbox-title" class="border-bottom w-100 text-center py-2 fs-5 fst-italic">MsgBox Title</div>
+      <div id="msgbox-body" class="text-center py-3 flex-grow-1">MsgBox Body</div>
+      <div id="msgbox-confirm" class="align-self-end py-4 px-5 pointer"><span onclick="Msgbox('msgbox','','')">אישור</span></div>
+    </div>
+  </div>
+  <div id="modal" class="page mask flex-center" onclick="Modal()"> 
+    <div id="modal-box" class="modal-box d-flex flex-column rounded-5 bg-body-tertiary" onclick="event.stopPropagation()">
+      <div id="modal-title" class="border-bottom w-100 text-center py-2 fs-5 fst-italic">כותרת</div>
+      <div id="modal-body" class="p-3 flex-center flex-grow-1 overflow-auto">הודעה</div>
+      <div id="modal-buttons" class="border-top py-3 d-flex justify-content-around">
+        <span class="text-body-secondary pointer px-5" onclick="Modal()">ביטול</span><div class="vr"></div>
+        <div id="modal-confirm" class="text-primary pointer px-5"></div>
+      </div>
+    </div> 
+  </div> 
+  <div id="action" class="page mask" onclick="Action('foo')"> 
+    <div class="action flex-column rounded-4 bg-body-tertiary" onclick="event.stopPropagation()"></div> 
+  </div>
+  <div id="sidebar" class="page mask" onclick="SideBar('foo')"> 
+    <div class="sidebar flex-column bg-body-tertiary" onclick="event.stopPropagation()"></div> 
+  </div>
+  <div class="toast-box flex-center w-100 trns-03"> 
+    <div class="toast-msg text-center rounded-4 text-bg-secondary px-4 py-1"></div> 
+  </div>
+</section>  
+
+<!-- APP TEMPLATES -->
+<section id="app-templats">
+  <template id="foo">.</template>
+  <template id="modal-change-password">
+    <div class="flex-column">
+      <br><div class="flex px-3 gap-2">
+        <span class="flex-grow-1 col-4">הזן סיסמה</span>
+        <input id="new-password" class="text-center col-6 border rounded-2 bg-body" type="password">
+        <i class="bi bi bi-eye px-3" onclick='Toggle_Pass_Type(this)'></i>
+      </div><br>
+      <div class="flex px-3 gap-2">
+        <span class="flex-grow-1 col-4">אשר סיסמה</span>
+        <input id="confirm-password" class="text-center col-6 border rounded-2 bg-body" type="password">
+        <i class="bi bi bi-eye px-3" onclick='Toggle_Pass_Type(this)'></i>
+      </div><br>
+    </div>
+  </template>
+  <template id="modal-folders-list">
+      <ul id="folders-ul" class="list-group flex-grow-1 px-3 pb-5 flex-column gap-2" style="height:50vh;">folder list...</ul>
+  </template>
+  <template id="li-folder">
+    <li class="flex py-2 px-2 pointer text-info">
+      <i class="bi bi-folder px-2" onclick="Main_Item_Click('~id~')"></i>
+      <div class="flex-grow-1 flex-column px-2" onclick="Main_Item_Click('~id~')">
+        <span class="fs-6">~name~</span>
+        <div class="text-secondary fs-small px-2">פריטים: ~childs~</div>
+      </div>
+      <i class="bi bi-three-dots-vertical px-2 text-secondary fs-6" title="פעולות" onclick="Item_Menu_Click('~id~')"></i>
+    </li>
+  </template>
+  <template id="li-key" >
+    <li class="flex pt-2 px-2 pointer flex" >
+      <i class="bi bi-key px-2" onclick="Main_Item_Click('~id~')"></i>
+      <div class="flex-grow-1 flex-column px-2" onclick="Main_Item_Click('~id~')">
+        <span>~name~</span>
+        <div class="text-secondary fs-small px-2">~user~</div>
+      </div>
+      <i class="bi bi-three-dots-vertical px-2 text-secondary fs-6" title="פעולות" onclick="Item_Menu_Click('~id~')"></i>
+    </li>
+  </template>
+  <template id="action-add-item">
+    <i class="border-bottom w-100 text-center py-1 fs-5">הוסף פריט</i>
+    <div class="flex w-100 py-3 pointer" onclick="Add_New_Folder()"><i class="bi bi-folder px-3"></i>הוסף תיקייה</div>
+    <div class="flex w-100 pb-5 pointer" onclick="Add_New_Key()"><i class="bi bi-key px-3"></i>הוסף מפתח</div>
+  </template>
+  <template id="modal-add-folder">
+    <span class="px-3 py-3">שם ספריה</span>
+    <input id="add-folder" class="text-center col-6 border rounded-2 bg-body" type="text">
+  </template>
+  <template id="modal-rename-folder">
+      <span class="px-3 py-3">שם ספריה</span>
+      <input id="rename-folder" class="text-center col-6 border rounded-2 bg-body" type="text">
+  </template>
+  <template id="action-item-menu">
+    <i id="item-menu-title" class="border-bottom w-100 text-center py-1 fs-5">הוסף פריט</i>
+    <div class="flex w-100 py-2 px-2 pointer" onclick="Action_Copy_Item_Click()"><i class="bi bi-clipboard px-3"></i>העתק פריט</div>
+    <div class="flex w-100 py-2 px-2 pointer" onclick="Action_Move_Item_Click()"><i class="bi bi-scissors px-3"></i>העבר פריט</div>
+    <div class="flex w-100 py-2 px-2 pointer" onclick="Action_Rename_Item_Click()"><i class="bi bi-alphabet px-3"></i>שנה שם פריט</div>
+    <div class="flex w-100 pt-2 pb-5 px-2 pointer text-danger" onclick="Action_Delete_Item_Click()"><i class="bi bi-trash px-3"></i>מחק פריט</div>
+  </template>
+  <template id="modal-load-file">
+    <div class="list-group flex-grow-1 px-3 py-3 flex-column gap-2" style="height:50vh;">
+      <label class="flex w-100 py-2 px-2 pointer" for="localFile"><i class="bi bi-file-earmark-arrow-down px-3"></i>יבוא קובץ מקומי</label>
+      <input type="file" accept=".txt" name="localFile" id="localFile" class="d-none" onchange="Import_Local_File(this)">
+      <label class="flex w-100 py-2 px-2 pointer" for="dropboxFile"><i class="bi bi-dropbox px-3"></i>יבוא קובץ מדרופבוקס</label>
+      <input type="file" accept=".txt" name="dropboxFile" id="dropboxFile" class="d-none" onchange="Import_From_Dropbox_Link(this)">
+      <div class="flex w-100 pt-2 pb-4 px-2 pointer" onclick="Create_NewDB()"><i class="bi bi-file-earmark-plus px-3"></i>צור קובץ סיסמאות חדש</div>
+    </div>
+  </template>
+</section>
+
+<!-- KEY FORM MODAL -->
+<div id="key-form-modal" class="page mask flex-center">
+  <div id="key-form-body" class="msgbox flex-column rounded-5 bg-body-tertiary" style="width:min(100%,450px);" onclick="event.stopPropagation()"> 
+    <header id="key-form-title" class="flex py-1 text-bg-primary rounded-top-5">
+      <i class="bi bi-pencil px-4 key-form-action" onclick="KeyEntry_Edit_Click()"></i>
+      <i class='key-name flex-grow-1 text-center fs-5'>Key</i>
+      <i class="bi bi-arrow-left px-4 key-form-action" title="חזור" onclick="KeyForm_Back_Click()"></i>
+    </header>
+    <header id="key-form-title" class="flex py-1 text-bg-success rounded-top-5 d-none">
+      <i class="bi bi-floppy px-4 key-form-action" title="שמור" onclick="KeyEntry_Edit_Save()"></i>
+      <i class='key-name flex-grow-1 text-center fs-5'>Key</i>
+      <i class="bi bi-x-circle px-4 key-form-action" title="ביטול" onclick="KeyEntry_Edit_Cancel()"></i>
+    </header>
+    <main class="flex-column flex-grow-1 px-3 pb-5"><br>
+      <div class="flex py-2" style="max-width:100vw;">
+        <i class="bi bi-alphabet-uppercase px-2"></i>
+        <input id='key-nameHe' type="text" class='key-entry border-0 border-bottom px-2 py-2 w-100' placeholder='Title Eng' disabled>
+        <i class="bi bi-x px-2 invisible"></i> 
+      </div>
+      <div class="flex py-2" style="max-width:100vw;">
+        <i class="bi bi-alphabet px-2"></i>
+        <input id='key-nameEn' type="text" class='key-entry border-0 border-bottom px-2 py-2 w-100' placeholder='Title Eng' disabled>
+        <i class="bi bi-x px-2 invisible"></i> 
+      </div>
+      <div class="flex my-2">
+        <i class="bi bi-person px-2" style="max-width:100vw;"></i>
+        <input id='key-user' type="text" class='key-entry border-0 border-bottom px-2 py-2 w-100' placeholder='user' disabled>
+        <i class="bi bi-clipboard px-2" onclick="Copy_Text('#key-user')"></i> 
+      </div>
+      <div class="flex my-2" style="max-width:100vw;">
+        <i class="bi bi-key px-2"></i>
+        <input id='key-password' type="password" class='key-entry border-0 border-bottom px-2 py-2 w-100' placeholder='password' disabled>
+        <i class="bi bi-eye px-2" onclick='Toggle_Pass_Type(this)'></i>
+        <i id="pass-generator" class="bi bi-calculator px-2" onclick="Generate_New_Password()"></i>
+        <i class="bi bi-clipboard px-2" onclick="Copy_Text('#key-password')"></i>
+      </div>
+      <div class="flex py-2" style="max-width:100vw;">
+        <i class="bi bi-globe px-2"></i>
+        <input id='key-url' type="text" class='key-entry border-0 border-bottom px-2 py-2 w-100' placeholder='website' disabled>
+        <i class="bi bi-link px-2" onclick="Open_Url()"></i>
+      </div>
+      <div class="flex py-2" style="max-width:100vw;">
+        <i class="bi bi-sticky px-2 flex-center"></i>
+        <textarea id='key-notes' class='key-entry border-0 border-bottom px-2 flex-grow-1' rows='5' placeholder='notes' disabled></textarea>
+        <i class="bi bi-x px-2 invisible"></i> 
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- MAIN SIDE MENU -->
+<div id="side-menu" class="page mask" onclick="Side_Menu(this.id)">
+  <div class="side-menu flex-column bg-body-tertiary" onclick="event.stopPropagation()">
+    <img src="./pics/logo.png" class="w-60 pt-4 align-self-center" alt="1Pass">
+    <hr>
+    <div class="flex w-100 my-2 px-2 pointer" onclick="SaveDb()"><i class="bi bi-floppy px-3"></i>שמור קובץ</div>    
+    <div class="flex w-100 my-2 px-2 pointer" onclick="Share_PassDB()"><i class="bi bi-share px-3"></i>שתף קובץ</div>    
+    <div class="flex w-100 my-2 px-2 pointer" onclick="Export_Json_Click()"><i class="bi bi-filetype-json px-3"></i>יצוא לקובץ JSON</div>
+    <div class="flex w-100 my-2 px-2 pointer" onclick="Change_Password_Click()"><i class="bi bi-arrow-left-right px-3"></i>החלף סיסמה</div>
+    <div class="flex w-100 my-2 px-2 pointer" onclick="Theme_Mode()"><i class="theme-icon bi bi-sun px-3"></i><span class="theme-text">תאורה</span></div>
+    <div class="flex w-100 my-2 px-2 pointer" onclick="Toggle_Full_Screen()"><i class="theme-icon bi bi-arrows-fullscreen px-3"></i>מסך מלא</div>
+    <div class="flex w-100 my-2 px-2 pointer text-danger" onclick=" ExitApp()"><i class="bi bi-box-arrow-left px-2 px-3"></i>יציאה</div>
+  </div>
+</div>
+
+<!-- PAGE AUTH -->
+<section id="page-auth" class="pg page flex-column page-hide">
+  <div class="flex-column flex-center h-100 w-100 gap-3">
+    LOAD KEY FILE
+    <input id="key-file" type="file" class="d-none" accept="text.txt" onchange="_Read_Key_File(this)"/>
+    <label id="key-file-label" for="key-file" class="bi bi-upload"></label>
+  </div>`
+</section>
+
+<!-- PAGE LOGIN -->
+<section id="page-login" class="pg page">
+  <main class="flex-column flex-grow-1 px-2 align-items-center">
+    <div class="align-self-start mt-3 mb-0 mx-2"><i class="bi bi bi-sun" onclick="Theme_Mode()"></i></div>
+    <i class="mt-2 fs-2">Welcome To</i><br>
+    <img class="flex-center w-70" style="object-fit:cover;" src="./pics/logo.png"></img><br>
+    <div class="w-100 text-center fs-4"><i>The Only <span class="text-info">Password</span><br>You'll ever need<br>To Remember<br><br></i></div>
+    <div id="login-password-div" class="flex-column">
+      <div class="flex-center w-100">
+        <i class="bi bi-x px-2 invisible"></i>
+        <input id='main-password' type="password" class='text-center py-2 flex-grow-1' placeholder='הקלד סיסמה'>
+        <i class="bi bi bi-eye px-2" onclick='Toggle_Pass_Type(this)'></i>
+      </div>
+      <button id="unlock-btn" class="btn text-bg-primary align-self-center px-4 mt-5" onclick='Login_Click()'>אישור</button>
+    </div>
+    <span id="login-msg-error" class="fs-5 pt-3 text-center text-danger d-none"></span>
+    <i id="locker-menu-fab" title="פעולות" class="fab-btn bi bi-plus flex-center fs-2 text-bg-primary" onclick="Import_Files()"></i>    
+  </main>
+</section>
+
+<!-- PAGE MAIN -->
+<section id="page-main" class="pg page page-hide">
+  <header class="flex py-1 px-2 text-bg-primary">
+    <i class="bi bi-list px-2" title="תפריט" onclick="SideBar('side-menu')"></i>
+    <i class="bi bi-search px-2" title="חיפוש" onclick="Search_Btn_Click()"></i>
+    <i id="main-title" class='flex-grow-1 text-center fs-5 px-2 d-block text-truncate'>root</i>
+    <i id="main-back-btn" title="חזור" class="bi bi-arrow-left px-2 d-none" onclick="Main_Back_Click()"></i>
+    <i id="main-exit-btn" title="יציאה" class="bi bi-box-arrow-left px-2 fw-bolder" onclick="location.reload()"></i>
+  </header>
+  <main class="flex-grow-1 mt-2 overflow-auto">
+    <a href="#" id="keyboard-down" class="d-none"></a>
+    <div id="pass-list" class="list-group p-1"></div>
+    <i class="bi bi-plus fab-btn text-bg-primary" title="הוסף" onclick="Action('action-add-item')"></i>
+  </main>
+</section>
+
+<!-- PAGE SEARCH -->
+<section id="page-search" class="pg page page-hide">
+  <header class="flex py-1 px-2 text-bg-primary">
+    <i id="clean-seach-input" title="חפש" class="bi bi-x px-2" onclick="Clean_Search_Input()"></i>
+    <i class='flex-grow-1 text-center fs-5'>חיפוש...</i>
+    <i class="bi bi-arrow-left px-2" title="חזור" onclick="Search_Back_Click()"></i>
+  </header>
+  <input type="text" id="search-input" class="px-3 py-2 my-2" placeholder="חפש..." onkeyup="Filter_Search_List()">
+  <div id="search-list" class="flex-grow-1 flex-column overflow-auto"></div>
+</section>
+
+</div></div> 
+</body>
+</html>
