@@ -39,17 +39,6 @@ const Delete_Basket = async (url) => {
   await fetch(url, {method: "DELETE"})
 }
 
-// const Get = async (url) => { const res = await fetch(url); const data = await res.json(); return data; } 
-// const Post = async (url, payload) => {
-//   const myHeaders = new Headers(); myHeaders.append("Content-Type", "application/json");
-//   await fetch(url, {method: "POST", body: JSON.stringify(payload), headers: myHeaders});
-// }
-// const Put = async (url, payload) => {
-//   const myHeaders = new Headers(); myHeaders.append("Content-Type", "application/json");
-//   await fetch(url, {method: "PUT", body: JSON.stringify(payload), headers: myHeaders});
-// }
-// const Delete = async(url, key) => { let res = await Get(url);  delete res[key]; await Post(url, res);}
-
 // -- ELEMENTS FUNCTIONS -- //
 const Page   = (pgArr) => pgArr.map(p => qs(p).classList.toggle("page-hide"));
 const Mask   = (pg) => qs("#"+pg).classList.toggle("mask-show")
@@ -128,8 +117,8 @@ function _Read_Key_File(f){
     lsPass.url = url; Setls('lsPass'); location.reload();}
 }
 async function StartApp(){
-  document.body.onfocus = () => {clearTimeout(exitTimer); navigator.clipboard.writeText("");}
-  document.body.onblur = () => {if (qs("#page-login").className.search("page-hide")>-1) Run_Exit_Timer();}
+  // document.body.onfocus = () => {clearTimeout(exitTimer); navigator.clipboard.writeText("");}
+  // document.body.onblur = () => { Run_Exit_Timer();}
   document.body.addEventListener("keydown", (e)=> {
     if (e.key == "Enter") Keyboard_Enter_Click(e);
     if (e.ctrlKey && e.key=="כ" || e.ctrlKey && e.key=="f" || e.ctrlKey && e.key=="F") Keyboard_Search_Click(e);
