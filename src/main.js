@@ -25,19 +25,6 @@ const Post = async (url, payload) => {
   const myHeaders = new Headers();  myHeaders.append("Content-Type", "application/json");
   await fetch(url, {method: "POST", body: JSON.stringify(payload), headers: myHeaders});
 }
-const Put = async (url, payload) => {
-  const res = await Get(url);  
-  const newPl = {...res, ...payload}
-  await Post(url, newPl);
-}
-const Delete_Key = async (url, key) => {
-  const res = await Get(url);
-  delete res[key];
-  await Post(url, res);
-}
-const Delete_Basket = async (url) => {
-  await fetch(url, {method: "DELETE"})
-}
 
 // -- ELEMENTS FUNCTIONS -- //
 const Page   = (pgArr) => pgArr.map(p => qs(p).classList.toggle("page-hide"));
@@ -83,7 +70,7 @@ const Save_To_File = (fileName, db) => {
 }
 const Save_DB = async() => {
   let pass = EncryptDB(JSON.stringify(DB),myPass)
-  try { await Post(lsPass.url,{pass}); Toast("הקובץ נשמר")}
+  try { await Post(lsPass.url,{"pdb":pass}); Toast("הקובץ נשמר")}
   catch {
     let confirm = `<span class="text-danger" onclick="Save_To_File('localPass.txt', '${pass}')">אישור</span>`
     Modal('<span class="text-danger"> שגיאה </span>', '<span class="text-danger"> השרת אינו מגיב <br> שמור קובץ מקומית </span>', confirm);  
@@ -106,14 +93,14 @@ Check_Auth()
 async function Check_Auth(){
   if (Getls("lsPass")==null) {lsPass.theme="dark"; lsPass.url=""; Setls('lsPass')}
   lsPass = Getls('lsPass'); url = lsPass.url; document.body.setAttribute("data-bs-theme", lsPass.theme); 
-  try{ Obj = await Get(url); txtDB=Obj.pass; StartApp()}
+  try{ Obj = await Get(url); txtDB=Obj.pdb; StartApp()}
   catch{ Goto_Page('page-auth')}
 }
 function _Read_Key_File(f){
   const file = f.files[0], reader = new FileReader(); reader.readAsText(file);
   reader.onload = () => {
     const pKey = reader.result;
-    url=`https://my-baskets.deno.dev/${pKey}/pass`;
+    url=pKey+'/pdb';
     lsPass.url = url; Setls('lsPass'); location.reload();}
 }
 async function StartApp(){
