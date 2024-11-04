@@ -18,14 +18,14 @@ const IsWindows = () => navigator.userAgentData.platform == "Windows"
 const Run_Exit_Timer = () => {exitTimer = setTimeout(location.reload(), 300000);}
 
 // -- API FUNCTIONS -- //
-const Get = async (url) => {
-  const res = await fetch(url); const data = await res.json(); return data;
+async function Get(url) {
+  const res = await fetch(url); const data = await res.text(); return data;
 }
-const Post = async (url, payload) => {
+async function Post(url, payload) {
   const myHeaders = new Headers();  myHeaders.append("Content-Type", "application/json");
-  await fetch(url, {method: "POST", body: JSON.stringify(payload), headers: myHeaders});
+  const res = await fetch(url, {method: "POST", body: payload, headers: myHeaders});
+  const data = await res.text(); return data;
 }
-
 // -- ELEMENTS FUNCTIONS -- //
 const Page   = (pgArr) => pgArr.map(p => qs(p).classList.toggle("page-hide"));
 const Mask   = (pg) => qs("#"+pg).classList.toggle("mask-show")
@@ -69,10 +69,10 @@ const Save_To_File = (fileName, db) => {
   setTimeout(() => { URL.revokeObjectURL(blobURL); a.remove(); }, 1000);
 }
 const Save_DB = async() => {
-  let pass = EncryptDB(JSON.stringify(DB),myPass)
-  try { await Post(lsPass.url,{"pdb":pass}); Toast("הקובץ נשמר")}
+  const payload = EncryptDB(JSON.stringify(DB),myPass)
+  try { await Post(lsPass.url, payload); Toast("הקובץ נשמר")}
   catch {
-    let confirm = `<span class="text-danger" onclick="Save_To_File('localPass.txt', '${pass}')">אישור</span>`
+    let confirm = `<span class="text-danger" onclick="Save_To_File('localPass.txt', '${payload}')">אישור</span>`
     Modal('<span class="text-danger"> שגיאה </span>', '<span class="text-danger"> השרת אינו מגיב <br> שמור קובץ מקומית </span>', confirm);  
   }
 }
@@ -93,14 +93,15 @@ Check_Auth()
 async function Check_Auth(){
   if (Getls("lsPass")==null) {lsPass.theme="dark"; lsPass.url=""; Setls('lsPass')}
   lsPass = Getls('lsPass'); url = lsPass.url; document.body.setAttribute("data-bs-theme", lsPass.theme); 
-  try{ Obj = await Get(url); txtDB=Obj.pdb; StartApp()}
+  if(url.length<5) {Goto_Page('page-auth'); return}
+  try{ txtDB = await Get(url); StartApp()}
   catch{ Goto_Page('page-auth')}
 }
 function _Read_Key_File(f){
   const file = f.files[0], reader = new FileReader(); reader.readAsText(file);
   reader.onload = () => {
     const pKey = reader.result;
-    url=pKey+'/pdb';
+    url=pKey+'/pass';
     lsPass.url = url; Setls('lsPass'); location.reload();}
 }
 async function StartApp(){
@@ -125,7 +126,7 @@ function Import_Local_File(f){
 async function Import_From_Dropbox_Link(f){
   let file = f.files[0]; let reader=new FileReader();
   reader.readAsText(file); reader.onload=()=> { 
-    linkTxt=reader.result; lsPass.dropbox=linkTxt; Setls();  Fetch_DropBox();}
+    linkTxt=reader.result; lsPass.dropbox=linkTxt; Setls(); Fetch_DropBox();}
 }
 async function Fetch_DropBox(){
   let drp = await fetch (lsPass.dropbox); txtDB = await drp.text(); 
