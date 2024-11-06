@@ -13,8 +13,11 @@ button {border:none; border-radius:0.3rem; font-size:0.9rem; padding:0.2rem 0.5r
 .app {position:relative; height:100vh; width:min(100vw,800px); overflow:hidden;}
 .page {position:absolute; width:100%; height:100%; display:flex; flex-direction:column; transition:0.3s;}  .page-hide {translate:0 50px; z-index:-2; opacity:0;}
 .mask {z-index:-5; opacity:0; transition: 0.3s;} .mask-show {z-index:9; opacity:1; background:rgba(0,0,0,0.7);}
-.modal-box {width:min(800px,90%); min-height:40%; max-height:80%; translate:0 50px; opacity:0; transition: 0.3s;} .modal-show {z-index:9; translate:0 -50px; opacity:1;}
-.msgbox {width:min(460px,75%); min-height:25%; translate:0 50px; opacity:0; transition: 0.3s;} .msgbox-show {z-index:9; translate:0 -50px; opacity:1;}
+/* .modal-box {width:min(800px,90%); min-height:40%; max-height:80%; translate:0 50px; opacity:0; transition: 0.3s;} .modal-show {z-index:9; translate:0 -50px; opacity:1;}
+.msgbox {width:min(460px,75%); min-height:25%; translate:0 50px; opacity:0; transition: 0.3s;} .msgbox-show {z-index:9; translate:0 -50px; opacity:1;} */
+.msgbox,.modal-box,.confirm-box {min-width:50%; min-height:25%; max-height: 70%; scale:0.5; opacity:0; transition: 0.3s;} 
+.msgbox-show,.modal-show,.confirm-show  {z-index:9; scale:1; opacity:1;}
+
 .action {position:absolute; width:100%; bottom:-100%; min-height:25%; opacity:0; transition: 0.3s;} .action-show {z-index:9;bottom:-5%; opacity:1;}
 .sidebar {position:absolute; width:80%; height:100%; right:-80%; opacity:0.5; transition: 0.3s;} .sidebar-show {z-index:9; right:0%; opacity:1;}
 /* .sidebar-left {position:absolute; width:80%; height:100%; left:-80%; opacity:0.5; transition: 0.3s;} */
